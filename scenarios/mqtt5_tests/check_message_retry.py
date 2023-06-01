@@ -79,8 +79,8 @@ class CheckApp(object):
         main
         """
         port = 1883
-        hostname = "localhost"
-        client_id = "thermostat"
+        hostname = "127.0.0.1"
+        client_id = "harry_potter"
 
         mqtt_client = mqtt.Client(
             client_id=client_id,
@@ -88,6 +88,18 @@ class CheckApp(object):
             transport="tcp",
         )
         mqtt_client.enable_logger(logging.getLogger("paho"))
+        # mqtt_client.username_pw_set("someusername", "somepassword")
+        # ssl_context = ssl.SSLContext(protocol=ssl.PROTOCOL_TLS_CLIENT)
+        # ssl_context.verify_mode = ssl.CERT_REQUIRED
+        # with open("chain.pem", mode="r") as ca_cert_file:
+        #   server_verification_cert = ca_cert_file.read()
+        # ssl_context.load_verify_locations(cadata=server_verification_cert)
+        # # ssl_context.load_default_certs()
+        
+        # ssl_context.load_cert_chain(certfile="sample_client.pem", keyfile="sample_client.key", password="mqtt")
+        
+        # ssl_context.check_hostname = True
+        # mqtt_client.tls_set_context(ssl_context)
 
         mqtt_client.on_connect = self.on_connect
         mqtt_client.on_message = self.on_message
@@ -107,7 +119,7 @@ class CheckApp(object):
 
         # Simulate a network failure by disconnecting from the broker
         mqtt_client.disconnect()
-        # mqtt_client.loop_stop()
+        mqtt_client.loop_stop()
 
         # Wait for a while to simulate the network downtime
         print("sleep for random time to have downtime")
