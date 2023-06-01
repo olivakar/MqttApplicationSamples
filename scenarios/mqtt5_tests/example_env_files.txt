@@ -1,0 +1,25 @@
+==============================EVENT GRID============================
+
+MQTT_HOST_NAME=olkargmqttsample.eastus2euap-1.ts.eventgrid.azure.net
+MQTT_USERNAME=sample_client
+MQTT_CLIENT_ID=sample_client
+MQTT_CERT_FILE=sample_client.pem
+MQTT_KEY_FILE=sample_client.key
+MQTT_CA_PATH=/etc/ssl/certs
+MQTT_KEY_FILE_PASSWORD=mqtt
+
+==============================SECURE============================
+
+MQTT_HOST_NAME=localhost
+MQTT_CLIENT_ID=sample_client
+MQTT_CERT_FILE=sample_client.pem
+MQTT_KEY_FILE=sample_client.key
+MQTT_CA_FILE=chain.pem
+MQTT_KEY_FILE_PASSWORD="mqtt"
+
+
+===========================INSECURE========================
+MQTT_HOST_NAME=localhost
+MQTT_TCP_PORT=1883
+MQTT_USE_TLS=false
+MQTT_CLIENT_ID=sample_client

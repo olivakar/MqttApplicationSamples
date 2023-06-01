@@ -1,0 +1,96 @@
+First connect was sent as clean session = True
+===============================================================================================================
+Connecting for first time...
+DEBUG:paho:Sending CONNECT (u0, p0, wr0, wq0, wf0, c1, k60) client_id=b'thermostat' properties=[]
+Sending publish id 1
+DEBUG:paho:Sending PUBLISH (d0, q1, r0, m1), 'b'samples/telemetry'', properties=[], ... (13 bytes)
+Sending publish id 2
+DEBUG:paho:Sending PUBLISH (d0, q1, r0, m2), 'b'samples/telemetry'', properties=[], ... (13 bytes)
+Sending publish id 3
+DEBUG:paho:Sending PUBLISH (d0, q1, r0, m3), 'b'samples/telemetry'', properties=[], ... (13 bytes)
+DEBUG:paho:Sending DISCONNECT reasonCode=None properties=None
+sleep for random time
+DEBUG:paho:Received CONNACK (0, Success) properties=[TopicAliasMaximum : 10]
+Connected with flags  {'session present': 0}
+Connected reason  Success
+Connected properties [TopicAliasMaximum : 10]
+Connected userdata None
+DEBUG:paho:Sending SUBSCRIBE (d0, m4) [(b'samples/telemetry', {QoS=0, noLocal=False, retainAsPublished=False, retainHandling=0})]
+Disconnected reason  0
+Disconnected properties  None
+Disconnected userdata  None
+DEBUG:paho:Sending CONNECT (u0, p0, wr0, wq0, wf0, c1, k60) client_id=b'thermostat' properties=[]
+DEBUG:paho:Received CONNACK (0, Success) properties=[TopicAliasMaximum : 10]
+Connected with flags  {'session present': 0}
+Connected reason  Success
+Connected properties [TopicAliasMaximum : 10]
+Connected userdata None
+DEBUG:paho:Sending SUBSCRIBE (d0, m5) [(b'samples/telemetry', {QoS=0, noLocal=False, retainAsPublished=False, retainHandling=0})]
+DEBUG:paho:Sending PUBLISH (d1, q1, r0, m1), 'b'samples/telemetry'', properties=[], ... (13 bytes)
+DEBUG:paho:Sending PUBLISH (d1, q1, r0, m2), 'b'samples/telemetry'', properties=[], ... (13 bytes)
+DEBUG:paho:Sending PUBLISH (d1, q1, r0, m3), 'b'samples/telemetry'', properties=[], ... (13 bytes)
+DEBUG:paho:Received SUBACK
+SUBSCRIBED
+DEBUG:paho:Received PUBACK (Mid: 1)
+DEBUG:paho:Received PUBLISH (d0, q0, r0, m0), 'samples/telemetry', properties=[], ...  (13 bytes)
+RECV Topic =  samples/telemetry
+RECV MSG = hello world 1
+DEBUG:paho:Received PUBACK (Mid: 2)
+DEBUG:paho:Received PUBLISH (d0, q0, r0, m0), 'samples/telemetry', properties=[], ...  (13 bytes)
+RECV Topic =  samples/telemetry
+RECV MSG = hello world 2
+DEBUG:paho:Received PUBACK (Mid: 3)
+DEBUG:paho:Received PUBLISH (d0, q0, r0, m0), 'samples/telemetry', properties=[], ...  (13 bytes)
+RECV Topic =  samples/telemetry
+RECV MSG = hello world 3
+Connecting again...
+DEBUG:paho:Sending CONNECT (u0, p0, wr0, wq0, wf0, c0, k60) client_id=b'thermostat' properties=[]
+
+===================================================================================================================
+First connect was sent as clean session = False
+====================================================================================================================
+Connecting for first time...
+DEBUG:paho:Sending CONNECT (u0, p0, wr0, wq0, wf0, c0, k60) client_id=b'thermostat' properties=[]
+Sending publish id 1
+DEBUG:paho:Sending PUBLISH (d0, q1, r0, m1), 'b'samples/telemetry'', properties=[], ... (13 bytes)
+Sending publish id 2
+DEBUG:paho:Sending PUBLISH (d0, q1, r0, m2), 'b'samples/telemetry'', properties=[], ... (13 bytes)
+Sending publish id 3
+DEBUG:paho:Sending PUBLISH (d0, q1, r0, m3), 'b'samples/telemetry'', properties=[], ... (13 bytes)
+DEBUG:paho:Sending DISCONNECT reasonCode=None properties=None
+sleep for random time to have downtime
+DEBUG:paho:Received CONNACK (0, Success) properties=[TopicAliasMaximum : 10]
+Connected with flags  {'session present': 0}
+Connected reason  Success
+Connected properties [TopicAliasMaximum : 10]
+Connected userdata None
+DEBUG:paho:Sending SUBSCRIBE (d0, m4) [(b'samples/telemetry', {QoS=0, noLocal=False, retainAsPublished=False, retainHandling=0})]
+Disconnected reason  0
+Disconnected properties  None
+Disconnected userdata  None
+DEBUG:paho:Sending CONNECT (u0, p0, wr0, wq0, wf0, c0, k60) client_id=b'thermostat' properties=[]
+DEBUG:paho:Received CONNACK (0, Success) properties=[TopicAliasMaximum : 10]
+Connected with flags  {'session present': 0}
+Connected reason  Success
+Connected properties [TopicAliasMaximum : 10]
+Connected userdata None
+DEBUG:paho:Sending SUBSCRIBE (d0, m5) [(b'samples/telemetry', {QoS=0, noLocal=False, retainAsPublished=False, retainHandling=0})]
+DEBUG:paho:Sending PUBLISH (d1, q1, r0, m1), 'b'samples/telemetry'', properties=[], ... (13 bytes)
+DEBUG:paho:Sending PUBLISH (d1, q1, r0, m2), 'b'samples/telemetry'', properties=[], ... (13 bytes)
+DEBUG:paho:Sending PUBLISH (d1, q1, r0, m3), 'b'samples/telemetry'', properties=[], ... (13 bytes)
+DEBUG:paho:Received SUBACK
+SUBSCRIBED
+DEBUG:paho:Received PUBACK (Mid: 1)
+DEBUG:paho:Received PUBLISH (d0, q0, r0, m0), 'samples/telemetry', properties=[], ...  (13 bytes)
+RECV Topic =  samples/telemetry
+RECV MSG = hello world 1
+DEBUG:paho:Received PUBACK (Mid: 2)
+DEBUG:paho:Received PUBLISH (d0, q0, r0, m0), 'samples/telemetry', properties=[], ...  (13 bytes)
+RECV Topic =  samples/telemetry
+RECV MSG = hello world 2
+DEBUG:paho:Received PUBACK (Mid: 3)
+DEBUG:paho:Received PUBLISH (d0, q0, r0, m0), 'samples/telemetry', properties=[], ...  (13 bytes)
+RECV Topic =  samples/telemetry
+RECV MSG = hello world 3
+Connecting again...
+DEBUG:paho:Sending CONNECT (u0, p0, wr0, wq0, wf0, c0, k60) client_id=b'thermostat' properties=[]
