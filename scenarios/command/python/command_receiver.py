@@ -16,8 +16,6 @@ from paho.mqtt.packettypes import PacketTypes
 from concurrent.futures import ThreadPoolExecutor
 
 REQUEST_TOPIC_PATTERN = "vehicles/{targetClientId}/command/{commandName}/request"
-RESPONSE_TOPIC_PATTERN = "vehicles/{targetClientId}/command/{commandName}/response"
-
 parser = ArgumentParser()
 parser.add_argument("--env-file", help="path to the .env file to use")
 args = parser.parse_args()
@@ -60,27 +58,25 @@ def on_disconnect(_client, _userdata, rc, _properties):
         connected_prop = False
         connected_cond.notify_all()
 
-def send_unlock_response(mqtt_client, correlation_id):
-    # topic = RESPONSE_TOPIC_PATTERN.format(targetClientId="vehicle03", commandName="unlock")
+def send_unlock_response(mqtt_client, correlation_id, response_topic):
+    # NOTE: Pending investigation of Protobuf in Python, we are using MQTT Properties
+    # Revisit this later.
     payload = "placeholder"
     msg_prop = Properties(PacketTypes.PUBLISH)
-    # msg_prop.UserProperty = ("Succeed", True)
-    # correlation_id = b'c366c131-23b1-4f4c-b0e8 -f54a4c0cb664'
+    msg_prop.UserProperty = ("Succeed", "True")
     msg_prop.CorrelationData = correlation_id
     print("Sending Unlock Response")
-    message_info = mqtt_client.publish("vehicles/vehicle03/command/unlock/response", payload, qos=1, properties=msg_prop)
-    # message_info.wait_for_publish(timeout=10)
+    message_info = mqtt_client.publish(response_topic, payload, qos=1, properties=msg_prop)
+    message_info.wait_for_publish(timeout=10)
 
 
 def on_unlock_command(_client, _userdata, message):
     print(f"Received unlock command")
     properties = message.properties
     correlation_id = properties.CorrelationData
-    # correlation_id = b'c366c131-23b1-4f4c-b0e8-f54a4c0cb664'
-    tpe.submit(send_unlock_response, _client, correlation_id)
-    # print(f"Received message on topic {message.topic} with payload {message.payload}")
-    # # # In Paho CB thread.
-    # request_ledger.respond_to_request(message.CorrelationData, message)
+    response_topic = properties.ResponseTopic
+    # Respond to the Unlock on a different thread so as not to block network loop
+    tpe.submit(send_unlock_response, _client, correlation_id, response_topic)
 
 def wait_for_connected(timeout: float = None) -> bool:
     with connected_cond:

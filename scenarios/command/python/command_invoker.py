@@ -53,18 +53,12 @@ def on_subscribe(client, _userdata, mid, _reason_codes, _properties):
         subscribed_cond.notify_all()
 
 def on_unlock_response(_client, _userdata, message):
-    print("RESPONSE???")
-    # print("ON RESPONSE???")
-    # print(f"Received message on topic {message.topic} with payload {message.payload}")
+    print(f"Received message on topic {message.topic} with payload {message.payload}")
     properties = message.properties
-    print("message properties are")
-    print(properties)
     # # In Paho CB thread.
-    # # NOTE: probably should marshall this to another thread for safety, but it should be fine
-    # # because the lock used in the ledger shouldn't ever block in practice of this sample
-    # correlation_id = b'c366c131-23b1-4f4c-b0e8-f54a4c0cb664'
-    correlation_id = properties.CorrelationData
-    request_ledger.respond_to_request(correlation_id, message)
+    # NOTE: probably should marshall this to another thread for safety, but it should be fine
+    # because the lock used in the ledger shouldn't ever block in practice of this sample
+    request_ledger.respond_to_request(properties.CorrelationData, message)
 
 def on_disconnect(_client, _userdata, rc, _properties):
     print("Received disconnect with error='{}'".format(mqtt.error_string(rc)))
@@ -122,40 +116,26 @@ def create_mqtt_client(client_id, connection_settings):
         mqtt_client.tls_set_context(context)
     return mqtt_client
 
-def send_unlock_command(mqtt_client, client_id):
-    topic = REQUEST_TOPIC_PATTERN.format(targetClientId="vehicle03", commandName="unlock")
+def send_unlock_command(mqtt_client, client_id, response_topic):
+    request_topic = REQUEST_TOPIC_PATTERN.format(targetClientId="vehicle03", commandName="unlock")
     payload = "placeholder"
     correlation_id = str(uuid.uuid4()).encode()
-    # correlation_id = b'c366c131-23b1-4f4c-b0e8-f54a4c0cb664'
     msg_prop = Properties(PacketTypes.PUBLISH)
+    # NOTE: Pending investigation of Protobuf in Python, we are using MQTT Properties
+    # Revisit this later.
     msg_prop.UserProperty = ("When", str(datetime.datetime.utcnow()))
     msg_prop.UserProperty = ("RequestedFrom", client_id)
     msg_prop.CorrelationData = correlation_id
+    msg_prop.ResponseTopic = response_topic
     print("Sending Unlock Request")
-    message_info = mqtt_client.publish(topic, payload, qos=1, properties=msg_prop)
+    message_info = mqtt_client.publish(request_topic, payload, qos=1, properties=msg_prop)
     message_info.wait_for_publish(timeout=10)
     response_future = request_ledger.get_response_future(correlation_id)
     print("Waiting for Unlock Response")
-    response_msg = response_future.result(timeout=30)
-    # print("Response: {}".format(response_msg.Succeed))
+    response_msg = response_future.result(timeout=10)
+    print("Response: {}".format(response_msg.properties.UserProperty[0]))
 
-# def get_response_future(corr_id):
-#     print("pre-lock GRF")
-#     with self.lock:
-#         corr_id = b'c366c131-23b1-4f4c-b0e8-f54a4c0cb664'
-#         print("New response future")
-#         response_future = Future()
-#         self.pending[corr_id] = response_future
-#         print(corr_id)
-#         print("put result in dict")
-#         return response_future
 
-# def respond_to_request(corr_id, value):
-#     print("pre-lock R2R")
-#     with self.lock:
-#         corr_id = b'c366c131-23b1-4f4c-b0e8-f54a4c0cb664'
-#         print("Respnding!")
-#         self.pending[corr_id].set_result(value)
 def main():
     connection_settings = cs.get_connection_settings(args.env_file)
     if not connection_settings["MQTT_CLEAN_SESSION"]:
@@ -167,7 +147,7 @@ def main():
     client_id = connection_settings["MQTT_CLIENT_ID"]
     mqtt_client = create_mqtt_client(client_id, connection_settings)
 
-    # ATTACH HANDLERS
+    # ATTACH CONN/SUB HANDLERS
     mqtt_client.on_connect = on_connect
     mqtt_client.on_subscribe = on_subscribe
     mqtt_client.on_disconnect = on_disconnect
@@ -188,13 +168,9 @@ def main():
         raise TimeoutError("Timed out waiting for connect")
 
     try:
-        # ATTACH COMMAND RESPONSE HANDLER
-        # mqtt_client.on_message = on_unlock_response
-
         # SUBSCRIBE TO COMMAND RESPONSES
-        (_subscribe_result, subscribe_mid) = mqtt_client.subscribe("vehicles/vehicle03/command/unlock/response", qos=1)
+        (_subscribe_result, subscribe_mid) = mqtt_client.subscribe(response_topic, qos=1)
         print(f"Sending subscribe requestor topic \"{response_topic}\" with message id {subscribe_mid}")
-        print(f"SUB RESULT: {_subscribe_result}")
 
         # WAIT FOR SUBSCRIBE
         if not wait_for_subscribed(timeout=10):
@@ -202,14 +178,13 @@ def main():
             raise TimeoutError("Timed out waiting for subscribe")
 
         # # ATTACH COMMAND RESPONSE HANDLER
-        mqtt_client.on_message = on_unlock_response
-        # mqtt_client.message_callback_add(response_topic, on_unlock_response)
+        mqtt_client.message_callback_add(response_topic, on_unlock_response)
 
         # PUBLISH COMMAND REQUESTS
         print("Beginning commands")
         while True:
-            send_unlock_command(mqtt_client, client_id)
-            time.sleep(5)
+            send_unlock_command(mqtt_client, client_id, response_topic)
+            time.sleep(2)
     except KeyboardInterrupt:
         print("User exit")
     except Exception:
